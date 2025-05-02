@@ -6,8 +6,14 @@ const nextConfig = {
   },
   images: {
     domains: ['localhost'],
-    unoptimized: true // This helps with Cloudflare Pages static exports
-  }
+    unoptimized: true // Required for static exports
+  },
+  // This is important for static exports
+  output: 'export',
+  // Configure trailing slash behavior
+  trailingSlash: true,
+  // Disable server components for static export
+  reactStrictMode: true
 }
 
 module.exports = nextConfig
