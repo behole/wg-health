@@ -5,16 +5,9 @@ const nextConfig = {
     serverComponentsExternalPackages: ['firebase']
   },
   images: {
-    domains: ['localhost'],
-    unoptimized: true
+    domains: ['localhost']
   },
-  output: 'export',
-  distDir: 'out',
-  reactStrictMode: true,
-  // Disable server-side API routes
-  rewrites: async () => {
-    return [];
-  }
+  reactStrictMode: true
 }
 
 module.exports = nextConfig
