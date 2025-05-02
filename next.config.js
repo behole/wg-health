@@ -8,10 +8,25 @@ const nextConfig = {
     domains: ['localhost'],
     unoptimized: true // Required for static export
   },
-  output: 'export',
+  // Only use static export for production (Vercel build)
+  ...(process.env.NODE_ENV === 'production' && {
+    output: 'export',
+  }),
   reactStrictMode: true,
-  // Add basePath for GitHub Pages if using a project page
-  // basePath: '/wg-health'
+  // Add custom headers for Vercel to help with routing
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, must-revalidate',
+          },
+        ],
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig
