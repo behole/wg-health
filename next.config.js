@@ -6,13 +6,8 @@ const nextConfig = {
   },
   images: {
     domains: ['localhost'],
-    unoptimized: true // Required for static exports
+    unoptimized: true
   },
-  // This is important for static exports
-  output: 'export',
-  // Configure trailing slash behavior
-  trailingSlash: true,
-  // Disable server components for static export
   reactStrictMode: true
 }
 

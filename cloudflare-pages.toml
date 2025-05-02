@@ -1,0 +1,14 @@
+# Cloudflare Pages configuration
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+  
+[build.environment]
+  NODE_VERSION = "18.17.1"
+
+# Redirect /* to Next.js app
+[[redirects]]
+  from = "/*"
+  to = "/_worker.js"
+  status = 200
