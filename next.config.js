@@ -5,9 +5,13 @@ const nextConfig = {
     serverComponentsExternalPackages: ['firebase']
   },
   images: {
-    domains: ['localhost']
+    domains: ['localhost'],
+    unoptimized: true // Required for static export
   },
-  reactStrictMode: true
+  output: 'export',
+  reactStrictMode: true,
+  // Add basePath for GitHub Pages if using a project page
+  // basePath: '/wg-health'
 }
 
 module.exports = nextConfig
