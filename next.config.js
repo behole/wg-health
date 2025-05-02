@@ -8,7 +8,13 @@ const nextConfig = {
     domains: ['localhost'],
     unoptimized: true
   },
-  reactStrictMode: true
+  output: 'export',
+  distDir: 'out',
+  reactStrictMode: true,
+  // Disable server-side API routes
+  rewrites: async () => {
+    return [];
+  }
 }
 
 module.exports = nextConfig
