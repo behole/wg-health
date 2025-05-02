@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom font styles */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap');
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  @apply bg-white text-black;
+  font-family: 'IBM Plex Mono', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base typography */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold;
+}
+
+/* Monospace elements */
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Custom button styles */
+button, 
+.button {
+  @apply outline-none focus:outline-none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active,
+.button:active {
+  @apply opacity-80;
+}
+
+/* Timeline styles */
+.timeline-dot {
+  @apply absolute left-0 w-4 h-4 rounded-full;
+  transform: translateX(-50%);
+}
+
+/* Make inputs more accessible */
+input, select, textarea {
+  @apply text-base p-3;
+}
+
+/* Custom scale feedback for touch elements */
+button:active,
+a:active {
+  transform: scale(0.98);
+}
+
+/* Improve focus accessibility */
+:focus {
+  @apply outline-none;
+}
+
+/* Time block colors */
+.time-morning {
+  @apply bg-yellow-400 text-black;
+}
+
+.time-afternoon {
+  @apply bg-red-400 text-white;
+}
+
+.time-evening {
+  @apply bg-purple-600 text-white;
+}
+
+/* Priority item states */
+.priority-item {
+  @apply flex items-center py-1;
+}
+
+.priority-complete .priority-text {
+  @apply line-through;
+}
+
+/* Accessibility helpers */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    @apply transition-none animate-none;
+  }
+}

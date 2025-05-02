@@ -1,0 +1,12 @@
+specVersion: "v1beta"
+serviceId: "mom-microsite"
+location: "us-west1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "fdcdb"
+      cloudSql:
+        instanceId: "mom-microsite-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]

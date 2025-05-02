@@ -1,0 +1,10 @@
+# Configuration for Cloudflare Pages
+
+[build]
+  command = "npm run build"
+  output_directory = "out"
+  ignore_dev_dependencies = true
+  
+[build.environment]
+  NODE_VERSION = "18.17.1"  # Match the version they're using
+  NPM_VERSION = "9.6.7"

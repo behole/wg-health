@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Connection Test</title>
+  <style>
+    body {
+      font-family: monospace;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      white-space: pre-wrap;
+    }
+    .success {
+      border-color: #4CAF50;
+      background-color: #E8F5E9;
+    }
+    .error {
+      border-color: #F44336;
+      background-color: #FFEBEE;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Firebase Connection Test</h1>
+  <p>This page tests the connection to your Firebase Firestore database.</p>
+  
+  <div>
+    <button id="testConnection">Test Connection</button>
+    <button id="readData">Read Test Data</button>
+    <button id="writeData">Write Test Data</button>
+  </div>
+  
+  <div id="result" class="result">Results will appear here...</div>
+
+  <!-- Import Firebase libraries -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAESVUpnsOD5CwLVWynqJjxHOAe375oNdA",
+      authDomain: "mom52-9ef06.firebaseapp.com",
+      projectId: "mom52-9ef06",
+      storageBucket: "mom52-9ef06.appspot.com",
+      messagingSenderId: "351238115118",
+      appId: "1:351238115118:web:551641d171fd30d33eb4bf",
+      measurementId: "G-H4WBQL70KZ"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const resultDiv = document.getElementById('result');
+
+    // Test Connection
+    document.getElementById('testConnection').addEventListener('click', async () => {
+      resultDiv.className = 'result';
+      resultDiv.textContent = 'Testing connection...';
+      
+      try {
+        // Try to access a collection - this will test basic connectivity
+        const q = query(collection(db, 'test'), limit(1));
+        await getDocs(q);
+        
+        resultDiv.className = 'result success';
+        resultDiv.textContent = '✅ Connection successful! Firebase is properly configured.';
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = `❌ Connection failed: ${error.message}`;
+        console.error('Connection test error:', error);
+      }
+    });
+
+    // Read Test Data
+    document.getElementById('readData').addEventListener('click', async () => {
+      resultDiv.className = 'result';
+      resultDiv.textContent = 'Reading data...';
+      
+      try {
+        const collectionNames = ['tvShows', 'books', 'medicines', 'foods', 'test'];
+        let results = '';
+        
+        for (const collName of collectionNames) {
+          const snapshot = await getDocs(collection(db, collName));
+          results += `📁 Collection "${collName}": ${snapshot.size} documents\n`;
+          
+          if (snapshot.size > 0) {
+            results += '---\n';
+            snapshot.forEach((doc, index) => {
+              if (index < 3) { // Limit to 3 docs per collection
+                results += `Document ID: ${doc.id}\n`;
+                results += `Data: ${JSON.stringify(doc.data(), null, 2)}\n`;
+                results += '---\n';
+              }
+            });
+            if (snapshot.size > 3) {
+              results += `... and ${snapshot.size - 3} more documents\n\n`;
+            }
+          }
+          results += '\n';
+        }
+        
+        resultDiv.className = 'result success';
+        resultDiv.textContent = results || 'No data found in any collection';
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = `❌ Error reading data: ${error.message}`;
+        console.error('Read error:', error);
+      }
+    });
+
+    // Write Test Data
+    document.getElementById('writeData').addEventListener('click', async () => {
+      resultDiv.className = 'result';
+      resultDiv.textContent = 'Writing test data...';
+      
+      try {
+        // Create a more structured test document with primitive values only
+        const testData = {
+          message: 'Test data',
+          timestamp: new Date().toISOString(),
+          testId: Math.floor(Math.random() * 1000000).toString(),
+          testBoolean: true,
+          testNumber: 42
+        };
+        
+        // First check if we can access the collection
+        const testColl = collection(db, 'testCollection');
+        resultDiv.textContent = 'Got collection reference, attempting to write...';
+        
+        // Now try to add the document
+        const docRef = await addDoc(testColl, testData);
+        
+        resultDiv.className = 'result success';
+        resultDiv.textContent = `✅ Test data written successfully! Document ID: ${docRef.id}`;
+      } catch (error) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = `❌ Error writing data: ${error.message}\n\nStack: ${error.stack}`;
+        console.error('Write error:', error);
+        
+        // Add firestore rule check
+        resultDiv.textContent += '\n\nPossible causes:\n' + 
+          '1. Firebase security rules might be blocking writes\n' +
+          '2. Your account might not have write permissions\n' +
+          '3. The project might be in a locked state\n\n' +
+          'Check Firebase Console > Firestore Database > Rules and ensure they allow writes.';
+      }
+    });
+  </script>
+</body>
+</html>
