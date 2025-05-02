@@ -5,7 +5,8 @@ const nextConfig = {
     serverComponentsExternalPackages: ['firebase']
   },
   images: {
-    domains: ['localhost']
+    domains: ['localhost'],
+    unoptimized: true // This helps with Cloudflare Pages static exports
   }
 }
 
