@@ -12,12 +12,16 @@ import SimpleFoodModule from '../components/food/SimpleFoodModule';
 import WeatherCard from '../components/weather/WeatherCard';
 import useQuote from '../hooks/useQuote';
 import OnboardingModal from '../components/ui/OnboardingModal'; // Import the modal
+import TooltipTour from '../components/ui/TooltipTour'; // Import the tooltip tour
 
 export default function HomePage() {
   const [noteText, setNoteText] = useState('');
   const router = useRouter();
   
   const [showOnboarding, setShowOnboarding] = useState(false); // State for modal visibility
+  const [showTooltipTour, setShowTooltipTour] = useState(false); // State for tooltip tour
+  const [onboardingStep, setOnboardingStep] = useState(1); // Track onboarding progress
+  const [userPreferences, setUserPreferences] = useState(null); // Store user preferences
   
   // Get current date and time
   const today = new Date();
@@ -33,23 +37,47 @@ export default function HomePage() {
     greeting = "Good Evening!";
   }
   
-  // Name state
+  // Name state - modified to use preferences if available
   const names = ["MARY", "MOM", "MIMI"];
   const [randomName, setRandomName] = useState("MARY"); // Default to prevent hydration error
   
-  // Set random name after initial render
+  // Set random name after initial render, or use preferences
   React.useEffect(() => {
-    setRandomName(names[Math.floor(Math.random() * names.length)]);
+    // Check if we have stored preferences
+    if (typeof window !== 'undefined') {
+      const storedPreferences = localStorage.getItem('userPreferences');
+      if (storedPreferences) {
+        try {
+          const prefs = JSON.parse(storedPreferences);
+          setUserPreferences(prefs);
+          setRandomName(prefs.preferredName || prefs.name);
+        } catch (err) {
+          console.error('Error parsing stored preferences:', err);
+          setRandomName(names[Math.floor(Math.random() * names.length)]);
+        }
+      } else {
+        setRandomName(names[Math.floor(Math.random() * names.length)]);
+      }
+    }
   }, []);
 
   // Onboarding logic
   useEffect(() => {
+    // Check if running in browser environment
+    if (typeof window === 'undefined') return;
+    
     const hasSeenOnboarding = localStorage.getItem('hasSeenMomAppOnboarding');
-    // Check if running in browser environment before accessing localStorage
-    if (typeof window !== 'undefined' && !hasSeenOnboarding) {
+    const hasCompletedTour = localStorage.getItem('hasCompletedTooltipTour');
+    
+    if (!hasSeenOnboarding) {
+      // First-time user: show the welcome modal
       setShowOnboarding(true);
+      setOnboardingStep(1);
+    } else if (hasSeenOnboarding && !hasCompletedTour) {
+      // Has seen basic onboarding but not the tooltip tour
+      setShowTooltipTour(true);
+      setOnboardingStep(2);
     }
-    // No dependency array needed if only checking on mount
   }, []);
   
   // UI state
@@ -125,6 +153,50 @@ export default function HomePage() {
     // Check if running in browser environment before accessing localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('hasSeenMomAppOnboarding', 'true');
+      
+      // Start tooltip tour after modal is closed
+      setTimeout(() => {
+        setShowTooltipTour(true);
+        setOnboardingStep(2);
+      }, 500);
+    }
+  };
+  
+  const handleCompleteTooltipTour = () => {
+    setShowTooltipTour(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hasCompletedTooltipTour', 'true');
+    }
+  };
+  
+  const handleSkipTooltipTour = () => {
+    setShowTooltipTour(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hasCompletedTooltipTour', 'true');
+    }
+  };
+  
+  // Function to save user preferences
+  const handleSavePreferences = (preferences) => {
+    if (typeof window !== 'undefined') {
+      // Save to state
+      setUserPreferences(preferences);
+      
+      // Update display name
+      setRandomName(preferences.preferredName || preferences.name);
+      
+      // Save to localStorage
+      localStorage.setItem('userPreferences', JSON.stringify(preferences));
+    }
+  };
+  
+  // Function to reset onboarding (for testing)
+  const resetOnboarding = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('hasSeenMomAppOnboarding');
+      localStorage.removeItem('hasCompletedTooltipTour');
+      localStorage.removeItem('userPreferences');
+      window.location.reload();
     }
   };
 
@@ -150,11 +222,25 @@ export default function HomePage() {
   return (
     <main className="flex flex-col min-h-screen bg-white text-black w-full max-w-md md:max-w-2xl lg:max-w-4xl mx-auto">
       {/* Render Onboarding Modal */}
-      <OnboardingModal isOpen={showOnboarding} onClose={handleCloseOnboarding} />
+      <OnboardingModal 
+        isOpen={showOnboarding} 
+        onClose={handleCloseOnboarding} 
+        onSavePreferences={handleSavePreferences}
+      />
+      
+      {/* Render Tooltip Tour */}
+      <TooltipTour 
+        isActive={showTooltipTour} 
+        onComplete={handleCompleteTooltipTour} 
+        onSkip={handleSkipTooltipTour}
+      />
 
-      {/* Beta Banner */}
-      <div className="fixed top-0 left-0 right-0 bg-black text-white text-xs text-center py-1 font-mono z-10">
-        BETA BETA BETA BETA BETA BETA BETA
+      {/* Beta Banner and Settings Link */}
+      <div className="fixed top-0 left-0 right-0 bg-black text-white text-xs text-center py-1 font-mono z-10 flex justify-between items-center px-2">
+        <span>BETA BETA BETA</span>
+        <Link href="/settings" className="text-white hover:text-gray-300">
+          ⚙️
+        </Link>
       </div>
       <div className="h-6"></div> {/* Spacer for fixed banner */}
       
@@ -170,8 +256,10 @@ export default function HomePage() {
           </div>
         </div>
         
-        {/* Weather Card - using zip code for Oceanside, CA */}
-        <WeatherCard zipCode="92054" />
+        {/* Weather Card - using user's zip code or default */}
+        <div id="weather-card">
+          <WeatherCard zipCode={userPreferences?.weatherLocation || "92054"} />
+        </div>
         
         {/* Inspirational Quote */}
         <div className="border-t border-b border-gray-300 py-2 my-3">
@@ -181,7 +269,7 @@ export default function HomePage() {
       </div>
       
       {/* Today's Priorities */}
-      <div className="px-4 mb-4">
+      <div className="px-4 mb-4" id="priorities-section">
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-bold">Today's Priorities 
             <button 
@@ -229,7 +317,7 @@ export default function HomePage() {
       </div>
       
       {/* Daily Schedule */}
-      <div className="px-4 mb-4">
+      <div className="px-4 mb-4" id="routine-section">
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-bold">Friday Routine 
             <button 
@@ -307,7 +395,7 @@ export default function HomePage() {
       </button>
       
       {/* Quick Access Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 px-4 mb-4">
+      <div id="quick-access" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 px-4 mb-4">
         {quickAccessItems.map(item => (
           <button 
             key={item.id} 
@@ -322,7 +410,7 @@ export default function HomePage() {
       </div>
       
       {/* Notes Input */}
-      <div className="px-4 mb-4">
+      <div id="notes-section" className="px-4 mb-4">
         <div className="border-2 border-black rounded-lg overflow-hidden">
           <textarea 
             className="w-full p-3 h-24 text-sm resize-none"
@@ -343,7 +431,7 @@ export default function HomePage() {
       </div>
       
       {/* Call Buttons */}
-      <div className="px-4 mb-8">
+      <div id="call-section" className="px-4 mb-8">
         <a 
           href="tel:+15551234567"
           className="block w-full bg-white border-2 border-black rounded-full py-3 mb-2 font-bold text-center flex items-center justify-center"
@@ -370,6 +458,18 @@ export default function HomePage() {
       {activeModule === 'Medicine' && <SimpleMedicineModule onClose={closeModule} />}
       {activeModule === 'Food' && <SimpleFoodModule onClose={closeModule} />}
       {/* Other modules can be added here later */}
+      
+      {/* Developer mode - Reset button (hidden in production) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-2 right-2 z-10">
+          <button 
+            onClick={resetOnboarding}
+            className="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded"
+          >
+            Reset Onboarding
+          </button>
+        </div>
+      )}
     </main>
   );
 }

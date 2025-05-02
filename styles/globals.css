@@ -4,6 +4,7 @@
 
 /* Custom font styles */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap');
+@import './tooltip.css';
 
 html {
   -webkit-tap-highlight-color: transparent;

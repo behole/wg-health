@@ -44,7 +44,10 @@
       "Bash(git merge:*)",
       "Bash(git merge:*)",
       "Bash(rm:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(git checkout:*)",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }

@@ -1,0 +1,6 @@
+{
+  "events": [
+    { "title": "Doctor Appointment", "date": "2024-05-15", "time": "10:00 AM" },
+    { "title": "Birthday Party", "date": "2024-05-20", "time": "3:00 PM" }
+  ]
+}

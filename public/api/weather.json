@@ -1,0 +1,11 @@
+{
+  "current": {
+    "temperature": 72,
+    "conditions": "Sunny",
+    "icon": "sun"
+  },
+  "forecast": [
+    { "day": "Today", "high": 75, "low": 65, "conditions": "Sunny" },
+    { "day": "Tomorrow", "high": 70, "low": 60, "conditions": "Partly Cloudy" }
+  ]
+}

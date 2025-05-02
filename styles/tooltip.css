@@ -1,0 +1,20 @@
+/* Tooltip styles */
+.tooltip-target {
+  position: relative;
+  z-index: 45;
+  box-shadow: 0 0 0 4px rgba(126, 34, 206, 0.4);
+  border-radius: 4px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(126, 34, 206, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(126, 34, 206, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(126, 34, 206, 0);
+  }
+}

@@ -1,5 +1,0 @@
-build:
-  command: npm run pages:build
-  output: .vercel/output/static
-  environment:
-    NODE_VERSION: "18.17.1"
