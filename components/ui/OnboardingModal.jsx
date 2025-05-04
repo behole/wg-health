@@ -2,11 +2,15 @@
 
 import React, { useState } from 'react';
 import UserPreferencesStep from './UserPreferencesStep';
+import RoutineSetupStep from './RoutineSetupStep';
 import OnboardingIllustration from './OnboardingIllustration';
 
-export default function OnboardingModal({ isOpen, onClose, onSavePreferences }) {
+export default function OnboardingModal({ isOpen, onClose, onSavePreferences, onSaveRoutine }) {
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 5; // Added one more step for user preferences
+  const totalSteps = 6; // Added one more step for routine setup
+  
+  // Store routine data temporarily if needed
+  const [routineData, setRoutineData] = useState(null);
   
   if (!isOpen) return null;
   
@@ -14,6 +18,10 @@ export default function OnboardingModal({ isOpen, onClose, onSavePreferences }) 
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
+      // Apply any pending changes before closing
+      if (routineData && onSaveRoutine) {
+        onSaveRoutine(routineData);
+      }
       onClose(); // Close the modal on the last step
     }
   };
@@ -35,6 +43,23 @@ export default function OnboardingModal({ isOpen, onClose, onSavePreferences }) 
     }
     
     // Go to the next step after saving preferences
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      onClose();
+    }
+  };
+  
+  const handleSaveRoutine = (routineConfig) => {
+    // Store routine data temporarily or save it immediately
+    setRoutineData(routineConfig);
+    
+    // Process routine directly if handler is provided
+    if (onSaveRoutine) {
+      onSaveRoutine(routineConfig);
+    }
+    
+    // Go to the next step
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -72,7 +97,7 @@ export default function OnboardingModal({ isOpen, onClose, onSavePreferences }) 
             <OnboardingIllustration type="welcome" />
             
             <p className="text-sm text-gray-600 mb-5">
-              This quick tour will help you get comfortable with your personal dashboard.
+              This quick tour will help you get comfortable with your daily dashboard.
             </p>
           </div>
         )}
@@ -185,34 +210,46 @@ export default function OnboardingModal({ isOpen, onClose, onSavePreferences }) 
           </div>
         )}
         
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-4">
-          {currentStep > 1 ? (
+        {/* Step 6: Routine Setup */}
+        {currentStep === 6 && (
+          <div className="step-content">
+            <RoutineSetupStep 
+              onSave={handleSaveRoutine}
+              onSkip={handleNext}
+            />
+          </div>
+        )}
+        
+        {/* Navigation Buttons - Only show when not on form steps */}
+        {(currentStep !== 5 && currentStep !== 6) && (
+          <div className="flex justify-between mt-4">
+            {currentStep > 1 ? (
+              <button 
+                onClick={handleBack}
+                className="text-purple-600 px-4 py-2 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                aria-label="Go back"
+              >
+                Back
+              </button>
+            ) : (
+              <button 
+                onClick={handleSkip}
+                className="text-gray-500 px-4 py-2 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                aria-label="Skip onboarding"
+              >
+                Skip
+              </button>
+            )}
+            
             <button 
-              onClick={handleBack}
-              className="text-purple-600 px-4 py-2 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-              aria-label="Go back"
+              onClick={handleNext}
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              aria-label={currentStep === totalSteps ? "Finish onboarding" : "Next step"}
             >
-              Back
+              {currentStep === totalSteps ? "Finish" : "Next"}
             </button>
-          ) : (
-            <button 
-              onClick={handleSkip}
-              className="text-gray-500 px-4 py-2 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-              aria-label="Skip onboarding"
-            >
-              Skip
-            </button>
-          )}
-          
-          <button 
-            onClick={handleNext}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-            aria-label={currentStep === totalSteps ? "Finish onboarding" : "Next step"}
-          >
-            {currentStep === totalSteps ? "Finish" : "Next"}
-          </button>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PriorityItem from '../components/priorities/PriorityItem';
 import ScheduleItem from '../components/schedule/ScheduleItem';
+import DailyRoutine from '../components/schedule/DailyRoutine';
+import RoutineEditor from '../components/schedule/RoutineEditor';
 import SimpleTvModule from '../components/entertainment/SimpleTvModule';
 import SimpleBooksModule from '../components/entertainment/SimpleBooksModule';
 import SimpleMedicineModule from '../components/health/SimpleMedicineModule';
@@ -13,6 +15,7 @@ import WeatherCard from '../components/weather/WeatherCard';
 import useQuote from '../hooks/useQuote';
 import OnboardingModal from '../components/ui/OnboardingModal'; // Import the modal
 import TooltipTour from '../components/ui/TooltipTour'; // Import the tooltip tour
+import ClientOnly from '../components/ClientOnly'; // Import the ClientOnly component
 
 export default function HomePage() {
   const [noteText, setNoteText] = useState('');
@@ -22,49 +25,77 @@ export default function HomePage() {
   const [showTooltipTour, setShowTooltipTour] = useState(false); // State for tooltip tour
   const [onboardingStep, setOnboardingStep] = useState(1); // Track onboarding progress
   const [userPreferences, setUserPreferences] = useState(null); // Store user preferences
+  const [routineConfig, setRoutineConfig] = useState(null); // Store routine configuration
+  const [isClientSide, setIsClientSide] = useState(false); // Track if we're client-side rendering
   
-  // Get current date and time
-  const today = new Date();
-  const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
-  const dateStr = today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
-  const currentHour = today.getHours();
+  // Static strings to prevent hydration errors
+  const ROUTINE_TITLE = "Daily Routine"; // Always use this static string
   
-  // Determine greeting based on time of day
-  let greeting = "Good Morning!";
-  if (currentHour >= 12 && currentHour < 17) {
-    greeting = "Good Afternoon!";
-  } else if (currentHour >= 17) {
-    greeting = "Good Evening!";
-  }
+  // Get current date and time (with a dummy value during SSR to prevent hydration mismatch)
+  const dateObj = new Date();
+  const currentHour = dateObj.getHours();
+  
+  // These date strings are only used after client-side rendering is confirmed
+  const [dayName, setDayName] = useState(""); 
+  const [dateStr, setDateStr] = useState("");
+  
+  // Determine greeting based on time of day - use a static value to prevent hydration mismatches
+  // We'll update this once client-side rendering is active
+  const [greeting, setGreeting] = useState("Hello!");
+  
+  // Update greeting based on time in useEffect
+  useEffect(() => {
+    if (!isClientSide) return;
+    
+    let newGreeting = "Good Morning!";
+    if (currentHour >= 12 && currentHour < 17) {
+      newGreeting = "Good Afternoon!";
+    } else if (currentHour >= 17) {
+      newGreeting = "Good Evening!";
+    }
+    setGreeting(newGreeting);
+  }, [isClientSide, currentHour]);
   
   // Name state - modified to use preferences if available
   const names = ["MARY", "MOM", "MIMI"];
   const [randomName, setRandomName] = useState("MARY"); // Default to prevent hydration error
   
+  // First useEffect to safely set client-side rendering flag and update date values
+  useEffect(() => {
+    // Mark that we're now on the client side
+    setIsClientSide(true);
+    
+    // Now that we're on the client, we can safely set date-related values
+    const today = new Date();
+    setDayName(today.toLocaleDateString('en-US', { weekday: 'long' }));
+    setDateStr(today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' }));
+  }, []);
+  
   // Set random name after initial render, or use preferences
   React.useEffect(() => {
+    // Only run on client-side to prevent hydration mismatch
+    if (!isClientSide) return;
+    
     // Check if we have stored preferences
-    if (typeof window !== 'undefined') {
-      const storedPreferences = localStorage.getItem('userPreferences');
-      if (storedPreferences) {
-        try {
-          const prefs = JSON.parse(storedPreferences);
-          setUserPreferences(prefs);
-          setRandomName(prefs.preferredName || prefs.name);
-        } catch (err) {
-          console.error('Error parsing stored preferences:', err);
-          setRandomName(names[Math.floor(Math.random() * names.length)]);
-        }
-      } else {
+    const storedPreferences = localStorage.getItem('userPreferences');
+    if (storedPreferences) {
+      try {
+        const prefs = JSON.parse(storedPreferences);
+        setUserPreferences(prefs);
+        setRandomName(prefs.preferredName || prefs.name);
+      } catch (err) {
+        console.error('Error parsing stored preferences:', err);
         setRandomName(names[Math.floor(Math.random() * names.length)]);
       }
+    } else {
+      setRandomName(names[Math.floor(Math.random() * names.length)]);
     }
-  }, []);
+  }, [isClientSide]);
 
   // Onboarding logic
   useEffect(() => {
-    // Check if running in browser environment
-    if (typeof window === 'undefined') return;
+    // Only run on client-side to prevent hydration mismatch
+    if (!isClientSide) return;
     
     const hasSeenOnboarding = localStorage.getItem('hasSeenMomAppOnboarding');
     const hasCompletedTour = localStorage.getItem('hasCompletedTooltipTour');
@@ -78,11 +109,29 @@ export default function HomePage() {
       setShowTooltipTour(true);
       setOnboardingStep(2);
     }
-  }, []);
+    
+    // Load saved routines if available
+    const savedRoutine = localStorage.getItem('dailyRoutine');
+    if (savedRoutine) {
+      try {
+        const parsedRoutine = JSON.parse(savedRoutine);
+        setRoutineConfig(parsedRoutine);
+        
+        // Also set the schedule from the saved routine items
+        if (parsedRoutine.routineItems && Array.isArray(parsedRoutine.routineItems)) {
+          setSchedule(parsedRoutine.routineItems);
+        }
+      } catch (error) {
+        console.error('Error loading saved routine:', error);
+      }
+    }
+  }, [isClientSide]);
   
   // UI state
   const [showPriorityForm, setShowPriorityForm] = useState(false);
   const [showRoutineForm, setShowRoutineForm] = useState(false);
+  const [showRoutineEditor, setShowRoutineEditor] = useState(false);
+  const [currentRoutineItem, setCurrentRoutineItem] = useState(null);
   const [showPrioritiesSection, setShowPrioritiesSection] = useState(true);
   const [showRoutineSection, setShowRoutineSection] = useState(true);
   const [activeModule, setActiveModule] = useState(null);
@@ -94,22 +143,8 @@ export default function HomePage() {
     { id: 3, text: 'Eat the Brownies', completed: false, time: 'Night' }
   ]);
   
-  // Daily schedule (would come from API/database)
-  const [schedule, setSchedule] = useState([
-    { id: 1, time: '6 AM', activity: 'Wake Up', completed: true },
-    { id: 2, time: '7:20 AM', activity: 'Rayf to School', completed: true },
-    { id: 3, time: '8:20 AM', activity: 'Breakfast', completed: true, hasDetails: true },
-    { id: 4, time: '9 AM', activity: 'Walk the Dogs', completed: true },
-    { id: 5, time: '10 AM', activity: '10 Min Meditation', completed: true, hasDetails: true },
-    { id: 6, time: '12:30 PM', activity: 'Lunch', completed: true, hasDetails: true },
-    { id: 7, time: '1-2 PM', activity: 'Chores', completed: false, hasDetails: true },
-    { id: 8, time: '2:30 PM', activity: 'Walk the Dogs', completed: false },
-    { id: 9, time: '3:20 PM', activity: 'Pick Up Rayf', completed: false },
-    { id: 10, time: '4-6 PM', activity: 'Me Time', completed: false },
-    { id: 11, time: '6:30 PM', activity: 'Dinner', completed: false, hasDetails: true },
-    { id: 12, time: '8:30PM', activity: 'Medication', completed: false },
-    { id: 13, time: '10 PM', activity: 'Bedtime Ritual', completed: false, hasDetails: true }
-  ]);
+  // Schedule state - starts empty until we load saved routine or create new one
+  const [schedule, setSchedule] = useState([]);
   
   // Quick access items with emoji icons
   const quickAccessItems = [
@@ -190,12 +225,97 @@ export default function HomePage() {
     }
   };
   
+  // Function to save routine configuration
+  const handleSaveRoutine = (routineConfig) => {
+    // Save routine to state
+    setRoutineConfig(routineConfig);
+    
+    // Update schedule with only routine items - no mixing with static data
+    if (routineConfig?.routineItems) {
+      // Set schedule to be exactly the routine items
+      setSchedule(routineConfig.routineItems);
+      
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('dailyRoutine', JSON.stringify(routineConfig));
+      }
+    }
+  };
+  
+  // Handle routine item editing
+  const handleEditRoutineItem = (item) => {
+    setCurrentRoutineItem(item);
+    setShowRoutineEditor(true);
+  };
+  
+  // Handle saving edited routine item
+  const handleSaveRoutineItem = (updatedItem) => {
+    // Update item in schedule
+    const updatedSchedule = schedule.map(item => 
+      item.id === updatedItem.id ? updatedItem : item
+    );
+    
+    setSchedule(updatedSchedule);
+    
+    // Update in routine config
+    if (routineConfig) {
+      const updatedRoutineItems = (routineConfig.routineItems || []).map(item => 
+        item.id === updatedItem.id ? updatedItem : item
+      );
+      
+      const newRoutineConfig = {
+        ...routineConfig,
+        routineItems: updatedRoutineItems,
+      };
+      
+      setRoutineConfig(newRoutineConfig);
+      
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('dailyRoutine', JSON.stringify(newRoutineConfig));
+      }
+    }
+    
+    // Close the editor
+    setShowRoutineEditor(false);
+    setCurrentRoutineItem(null);
+  };
+  
+  // Handle deleting routine item
+  const handleDeleteRoutineItem = (itemId) => {
+    if (confirm('Are you sure you want to remove this from your routine?')) {
+      // Remove from schedule
+      const updatedSchedule = schedule.filter(item => item.id !== itemId);
+      setSchedule(updatedSchedule);
+      
+      // Remove from routine config
+      if (routineConfig) {
+        const updatedRoutineItems = (routineConfig.routineItems || []).filter(item => 
+          item.id !== itemId
+        );
+        
+        const newRoutineConfig = {
+          ...routineConfig,
+          routineItems: updatedRoutineItems,
+        };
+        
+        setRoutineConfig(newRoutineConfig);
+        
+        // Save to localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('dailyRoutine', JSON.stringify(newRoutineConfig));
+        }
+      }
+    }
+  };
+  
   // Function to reset onboarding (for testing)
   const resetOnboarding = () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('hasSeenMomAppOnboarding');
       localStorage.removeItem('hasCompletedTooltipTour');
       localStorage.removeItem('userPreferences');
+      localStorage.removeItem('dailyRoutine');
       window.location.reload();
     }
   };
@@ -203,6 +323,7 @@ export default function HomePage() {
   const handleAddAppointment = () => {
     router.push('/appointment');
   };
+  
   const togglePriorityForm = () => {
     setShowPriorityForm(!showPriorityForm);
   };
@@ -218,6 +339,31 @@ export default function HomePage() {
   const toggleRoutineSection = () => {
     setShowRoutineSection(!showRoutineSection);
   };
+  
+  const closeRoutineEditor = () => {
+    setShowRoutineEditor(false);
+    setCurrentRoutineItem(null);
+  };
+  
+  const addNewRoutineItem = () => {
+    setCurrentRoutineItem(null);
+    setShowRoutineEditor(true);
+  };
+  
+  const resetRoutine = () => {
+    if (confirm('Are you sure you want to reset your daily routine? This will remove all routine items.')) {
+      // Clear schedule entirely - no placeholders
+      setSchedule([]);
+      
+      // Clear routine config
+      setRoutineConfig(null);
+      
+      // Remove from localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('dailyRoutine');
+      }
+    }
+  };
 
   return (
     <main className="flex flex-col min-h-screen bg-white text-black w-full max-w-md md:max-w-2xl lg:max-w-4xl mx-auto">
@@ -226,6 +372,7 @@ export default function HomePage() {
         isOpen={showOnboarding} 
         onClose={handleCloseOnboarding} 
         onSavePreferences={handleSavePreferences}
+        onSaveRoutine={handleSaveRoutine}
       />
       
       {/* Render Tooltip Tour */}
@@ -248,11 +395,15 @@ export default function HomePage() {
       <div className="p-4">
         <div className="flex justify-between items-start">
           <div>
-            <p className="text-sm">{greeting}</p>
+            <ClientOnly fallback={<p className="text-sm">Hello!</p>}>
+              <p className="text-sm">{greeting}</p>
+            </ClientOnly>
             <h1 className="text-5xl font-bold leading-none">{randomName}</h1>
           </div>
           <div className="text-right">
-            <p className="text-sm">{dayName} {dateStr}</p>
+            <ClientOnly fallback={<p className="text-sm">Today's Date</p>}>
+              <p className="text-sm">{dayName} {dateStr}</p>
+            </ClientOnly>
           </div>
         </div>
         
@@ -319,9 +470,10 @@ export default function HomePage() {
       {/* Daily Schedule */}
       <div className="px-4 mb-4" id="routine-section">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="font-bold">Friday Routine 
+          <h2 className="font-bold">
+            Daily Routine
             <button 
-              onClick={toggleRoutineForm} 
+              onClick={addNewRoutineItem} 
               className="text-purple-600 ml-1"
               aria-label="Add routine item"
             >+</button>
@@ -336,52 +488,89 @@ export default function HomePage() {
         </div>
         
         {showRoutineSection && (
-          <>
-            {/* Hidden Add Routine Form */}
-            {showRoutineForm && (
-              <div className="mb-3 p-2 border border-black bg-gray-50">
-                <div className="mb-2">
-                  <input 
-                    type="text" 
-                    className="w-1/3 border border-gray-300 p-2 mr-2" 
-                    placeholder="Time"
-                  />
-                  <input 
-                    type="text" 
-                    className="w-3/5 border border-gray-300 p-2" 
-                    placeholder="Activity"
-                  />
+          <ClientOnly fallback={
+            <div className="h-20 flex items-center justify-center">
+              <p className="text-gray-400">Loading your routine...</p>
+            </div>
+          }>
+            <>
+              {/* Show different content depending on user's routine setup state */}
+              {schedule.length > 0 ? (
+                <div className="routine-container">
+                  <div className="relative">
+                    {/* Routine items */}
+                    <div className="absolute left-2 top-0 bottom-0 w-1 bg-gray-200"></div>
+                    <div 
+                      className="absolute left-2 top-0 w-1 bg-yellow-400" 
+                      style={{ 
+                        height: `${schedule.length > 0 ? (schedule.filter(item => item.completed).length / schedule.length) * 100 : 0}%` 
+                      }}
+                    ></div>
+                    
+                    <ul className="pl-6">
+                      {/* Sort the schedule by time */}
+                      {[...schedule].sort((a, b) => {
+                        // Helper function to convert time to minutes for comparison
+                        const timeToMinutes = (timeStr) => {
+                          if (!timeStr) return 0;
+                          
+                          const isPM = timeStr.includes('PM');
+                          const timeOnly = timeStr.replace(/(AM|PM)/, '').trim();
+                          let [hours, minutes] = timeOnly.split(':').map(Number);
+                          
+                          if (isPM && hours < 12) hours += 12;
+                          if (!isPM && hours === 12) hours = 0;
+                          
+                          return hours * 60 + (minutes || 0);
+                        };
+                        
+                        return timeToMinutes(a.time) - timeToMinutes(b.time);
+                      }).map(item => (
+                        <ScheduleItem 
+                          key={item.id}
+                          item={item}
+                          onToggle={handleToggleScheduleItem}
+                          onEdit={handleEditRoutineItem}
+                          onDelete={handleDeleteRoutineItem}
+                        />
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* Reset routine button */}
+                  <button 
+                    onClick={resetRoutine}
+                    className="text-xs text-gray-500 mt-4 mb-2 hover:text-purple-600 flex items-center justify-center w-full"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Reset My Routine
+                  </button>
                 </div>
-                <div className="flex justify-end">
-                  <button className="px-3 py-1 bg-black text-white">Add</button>
-                </div>
-              </div>
-            )}
-            
-            <div className="relative">
-              {/* Vertical timeline line with progress */}
-              <div className="absolute left-2 top-0 bottom-0 w-1 bg-gray-200"></div>
-              {/* Progress bar overlay */}
-              {schedule.length > 0 && (
-                <div 
-                  className="absolute left-2 top-0 w-1 bg-yellow-400" 
-                  style={{ 
-                    height: `${(schedule.filter(item => item.completed).length / schedule.length) * 100}%` 
-                  }}
-                ></div>
+              ) : (
+                /* If no routine is set up, show the DailyRoutine component with templates */
+                <DailyRoutine 
+                  routineItems={routineConfig?.routineItems || []}
+                  onToggle={handleToggleScheduleItem}
+                  onUpdateItem={handleSaveRoutine}
+                />
               )}
               
-              <ul className="pl-6">
-                {schedule.map(item => (
-                  <ScheduleItem 
-                    key={item.id}
-                    item={item}
-                    onToggle={handleToggleScheduleItem}
-                  />
-                ))}
-              </ul>
-            </div>
-          </>
+              {/* Routine Editor Modal */}
+              {showRoutineEditor && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                  <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-auto">
+                    <RoutineEditor 
+                      routineItem={currentRoutineItem}
+                      onSave={handleSaveRoutineItem}
+                      onCancel={closeRoutineEditor}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          </ClientOnly>
         )}
       </div>
       
