@@ -82,7 +82,8 @@ const DailyRoutine = ({
     }));
     
     // Add all template items at once
-    onUpdateItem(newItems);
+    // Pass the data in the expected format
+    onUpdateItem({ routineItems: newItems });
     
     // Close template selector
     setShowTemplateSelector(false);

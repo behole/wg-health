@@ -27,6 +27,8 @@ export default function HomePage() {
   const [userPreferences, setUserPreferences] = useState(null); // Store user preferences
   const [routineConfig, setRoutineConfig] = useState(null); // Store routine configuration
   const [isClientSide, setIsClientSide] = useState(false); // Track if we're client-side rendering
+  // Schedule state - starts empty until we load saved routine or create new one
+  const [schedule, setSchedule] = useState([]);
   
   // Static strings to prevent hydration errors
   const ROUTINE_TITLE = "Daily Routine"; // Always use this static string
@@ -72,7 +74,7 @@ export default function HomePage() {
   }, []);
   
   // Set random name after initial render, or use preferences
-  React.useEffect(() => {
+  useEffect(() => {
     // Only run on client-side to prevent hydration mismatch
     if (!isClientSide) return;
     
@@ -90,7 +92,7 @@ export default function HomePage() {
     } else {
       setRandomName(names[Math.floor(Math.random() * names.length)]);
     }
-  }, [isClientSide]);
+  }, [isClientSide, names]);
 
   // Onboarding logic
   useEffect(() => {
@@ -143,8 +145,6 @@ export default function HomePage() {
     { id: 3, text: 'Eat the Brownies', completed: false, time: 'Night' }
   ]);
   
-  // Schedule state - starts empty until we load saved routine or create new one
-  const [schedule, setSchedule] = useState([]);
   
   // Quick access items with emoji icons
   const quickAccessItems = [
@@ -664,7 +664,8 @@ export default function HomePage() {
 }
 
 // Quote display component - separating this to use the hook
-const QuoteDisplay = () => {
+// The component is defined outside the main component to prevent re-rendering issues
+const QuoteDisplay = React.memo(() => {
   const { quote, loading } = useQuote();
   
   if (loading) {
@@ -677,4 +678,4 @@ const QuoteDisplay = () => {
       {quote.author && <p className="text-right text-xs mt-1">— {quote.author}</p>}
     </div>
   );
-};
+});
