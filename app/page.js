@@ -648,17 +648,15 @@ export default function HomePage() {
       {activeModule === 'Food' && <SimpleFoodModule onClose={closeModule} />}
       {/* Other modules can be added here later */}
       
-      {/* Developer mode - Reset button (hidden in production) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-2 right-2 z-10">
-          <button 
-            onClick={resetOnboarding}
-            className="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded"
-          >
-            Reset Onboarding
-          </button>
-        </div>
-      )}
+      {/* Reset button - always visible during beta */}
+      <div className="fixed bottom-2 right-2 z-10">
+        <button 
+          onClick={resetOnboarding}
+          className="bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded"
+        >
+          Reset Onboarding
+        </button>
+      </div>
     </main>
   );
 }
