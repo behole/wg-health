@@ -47,7 +47,8 @@
       "Bash(find:*)",
       "Bash(cat:*)",
       "Bash(git checkout:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "WebFetch(domain:wg-health.vercel.app)"
     ],
     "deny": []
   }
