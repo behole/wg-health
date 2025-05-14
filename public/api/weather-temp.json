@@ -1,10 +1,10 @@
 {
-  "temperature": 72,
+  "temperature": 22,
   "condition": "sunny",
-  "highTemp": 78,
-  "lowTemp": 65,
+  "highTemp": 26,
+  "lowTemp": 18,
   "description": "It's a beautiful day! Perfect weather to spend some time outdoors.",
   "humidity": 65,
-  "windSpeed": 5,
+  "windSpeed": 8,
   "location": "Oceanside"
 }

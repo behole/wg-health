@@ -92,7 +92,7 @@ export default function OnboardingModal({ isOpen, onClose, onSavePreferences, on
       let userPrefs = {
         name: 'Mom',
         preferredName: 'Mom',
-        weatherLocation: '92054',
+        weatherLocation: 'M4B 1B3',
         timeZone: 'America/Los_Angeles'
       };
       
@@ -501,7 +501,7 @@ const ProfileSetupScreen = ({ onNext, onBack }) => {
   const [formState, setFormState] = React.useState({
     name: '',
     preferredName: '',
-    weatherLocation: '92054'
+    weatherLocation: 'M4B 1B3'
   });
   
   // Destructure for convenience
@@ -569,13 +569,13 @@ const ProfileSetupScreen = ({ onNext, onBack }) => {
       
       <div className="mb-8">
         <label className="block text-xl text-gray-700 mb-2" htmlFor="weatherLocation">
-          ZIP Code (for weather)
+          Postal Code (for weather)
         </label>
         <input 
           type="text" 
           id="weatherLocation"
           className="w-full p-4 text-lg border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none" 
-          placeholder="92054"
+          placeholder="M4B 1B3"
           value={weatherLocation}
           onChange={handleWeatherLocationChange}
         />

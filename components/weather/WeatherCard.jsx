@@ -4,12 +4,12 @@ import React from 'react';
 import useWeather from '../../hooks/useWeather';
 import { getWeatherTheme, getClothingSuggestion, getWeatherIcon } from '../../lib/weather';
 
-// Default zip code - can be changed in user settings
-const DEFAULT_ZIP = '92054';
+// Default postal code - can be changed in user settings
+const DEFAULT_POSTAL = 'M4B 1B3';
 
-const WeatherCard = ({ location, zipCode = DEFAULT_ZIP }) => {
-  // Priority: 1. zipCode (if provided), 2. location (legacy/fallback)
-  const { weather: weatherData, loading, error } = useWeather(zipCode, location);
+const WeatherCard = ({ location, postalCode = DEFAULT_POSTAL }) => {
+  // Priority: 1. postalCode (if provided), 2. location (legacy/fallback)
+  const { weather: weatherData, loading, error } = useWeather(postalCode, location);
   
   // Show loading state
   if (loading && !weatherData) {
@@ -45,8 +45,10 @@ const WeatherCard = ({ location, zipCode = DEFAULT_ZIP }) => {
       <div className="flex items-center justify-between mb-3">
         <div>
           <h2 className="text-2xl font-bold">Today's Weather</h2>
-          {weatherData.location && (
+          {weatherData.location && !weatherData.location.includes("Postal Code:") ? (
             <p className="text-sm font-medium">{weatherData.location}</p>
+          ) : (
+            <p className="text-sm font-medium bg-blue-100 rounded-md px-2 py-1 inline-block">Postal Code: {postalCode}</p>
           )}
         </div>
         <span className="text-4xl">{getWeatherIcon(theme.icon)}</span>
@@ -54,18 +56,18 @@ const WeatherCard = ({ location, zipCode = DEFAULT_ZIP }) => {
       
       {/* Temperature and condition */}
       <div className="flex items-baseline mb-2">
-        <span className="text-3xl font-bold mr-2">{weatherData.temperature}°</span>
+        <span className="text-3xl font-bold mr-2">{weatherData.temperature}°C</span>
         <span className="capitalize text-lg">{weatherData.condition}</span>
       </div>
       
       {/* High/Low temperatures and additional data */}
       <p className="text-lg mb-3">
-        High: {weatherData.highTemp}° • Low: {weatherData.lowTemp}°
+        High: {weatherData.highTemp}°C • Low: {weatherData.lowTemp}°C
         {weatherData.humidity && (
           <span className="block text-sm mt-1">Humidity: {weatherData.humidity}%</span>
         )}
         {weatherData.windSpeed && (
-          <span className="block text-sm">Wind: {weatherData.windSpeed} mph</span>
+          <span className="block text-sm">Wind: {weatherData.windSpeed} km/h</span>
         )}
       </p>
       

@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+import '../styles/onboarding-fix.css';
 
 export const viewport = {
   width: 'device-width',

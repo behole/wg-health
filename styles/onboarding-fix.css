@@ -1,0 +1,4 @@
+/* Fix for blue ZIP Code label in onboarding */
+label[for="weatherLocation"] {
+  background-color: transparent !important;
+}

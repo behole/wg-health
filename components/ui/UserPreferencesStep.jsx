@@ -64,7 +64,7 @@ const UserPreferencesStep = ({ onSave, onSkip }) => {
         
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1" htmlFor="weatherLocation">
-            ZIP Code (for weather)
+            Postal Code (for weather)
           </label>
           <input
             type="text"

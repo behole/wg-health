@@ -407,9 +407,9 @@ export default function HomePage() {
           </div>
         </div>
         
-        {/* Weather Card - using user's zip code or default */}
+        {/* Weather Card - using user's postal code or default */}
         <div id="weather-card">
-          <WeatherCard zipCode={userPreferences?.weatherLocation || "92054"} />
+          <WeatherCard postalCode={userPreferences?.weatherLocation || "92054"} />
         </div>
         
         {/* Inspirational Quote */}

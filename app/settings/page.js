@@ -8,7 +8,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [preferredName, setPreferredName] = useState('');
-  const [weatherLocation, setWeatherLocation] = useState('92054');
+  const [weatherLocation, setWeatherLocation] = useState('M4B 1B3');
   const [resetConfirm, setResetConfirm] = useState(false);
   
   // Load existing preferences
@@ -107,13 +107,13 @@ export default function SettingsPage() {
         
         <div className="mb-6">
           <label className="block text-sm font-medium mb-1" htmlFor="weatherLocation">
-            ZIP Code (for weather)
+            Postal Code (for weather)
           </label>
           <input
             type="text"
             id="weatherLocation"
             className="w-full border border-gray-300 rounded-md p-2 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-            placeholder="92054"
+            placeholder="M4B 1B3"
             value={weatherLocation}
             onChange={(e) => setWeatherLocation(e.target.value)}
           />
