@@ -1,7 +1,7 @@
 {
-  "name": "Mary's Daily Page",
-  "short_name": "Mary's Page",
-  "description": "A daily helper app for Mary",
+  "name": "Plan'd Beta Test",
+  "short_name": "Plan'd Beta Test",
+  "description": "Plan'd Beta Test",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",

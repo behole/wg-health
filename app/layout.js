@@ -9,8 +9,8 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: "Mary's Daily Page",
-  description: 'A personalized daily assistant for Mary',
+  title: "Plan'd Beta Test",
+  description: 'Pland Beta Test',
   manifest: '/manifest.json',
 };
 
