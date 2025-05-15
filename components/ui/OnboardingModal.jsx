@@ -90,8 +90,8 @@ export default function OnboardingModal({ isOpen, onClose, onSavePreferences, on
     if (onSavePreferences) {
       // Get user preferences from localStorage if available
       let userPrefs = {
-        name: 'Mom',
-        preferredName: 'Mom',
+        name: 'User',
+        preferredName: 'User',
         weatherLocation: 'M4B 1B3',
         timeZone: 'America/Los_Angeles'
       };
@@ -403,8 +403,8 @@ const WelcomeScreen = ({ onNext }) => {
         </svg>
       </div>
       
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to Your Daily Dashboard</h1>
-      <p className="text-xl text-gray-600 mb-6">Your friendly companion for daily activities</p>
+      <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to Plan'd Beta Test</h1>
+      <p className="text-xl text-gray-600 mb-6">Your personal dashboard</p>
       
       <p className="text-lg text-gray-600 mb-8">
         This dashboard helps you keep track of your activities and stay connected with your loved ones. Everything is simple, secure, and designed with your needs in mind.
@@ -524,9 +524,9 @@ const ProfileSetupScreen = ({ onNext, onBack }) => {
   const handleContinue = () => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('userPreferences', JSON.stringify({
-        name: name || 'Mom',
-        preferredName: preferredName || name || 'Mom',
-        weatherLocation: weatherLocation || '92054',
+        name: name || 'User',
+        preferredName: preferredName || name || 'User',
+        weatherLocation: weatherLocation || 'M4B 1B3',
         timeZone: 'America/Los_Angeles'
       }));
     }
@@ -549,7 +549,7 @@ const ProfileSetupScreen = ({ onNext, onBack }) => {
           value={name}
           onChange={handleNameChange}
         />
-        <p className="text-gray-500 mt-2">For example: Mary, John, etc.</p>
+        <p className="text-gray-500 mt-2">For example: Jane, John, etc.</p>
       </div>
       
       <div className="mb-6">
@@ -560,7 +560,7 @@ const ProfileSetupScreen = ({ onNext, onBack }) => {
           type="text" 
           id="preferredName"
           className="w-full p-4 text-lg border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none" 
-          placeholder="Mom, Grandma, etc."
+          placeholder="User, Tester, etc."
           value={preferredName}
           onChange={handlePreferredNameChange}
         />
@@ -952,7 +952,7 @@ const SuccessScreen = ({ onFinish, onBack }) => {
       
       <h1 className="text-3xl font-bold text-gray-800 mb-2">Congratulations! You're All Set!</h1>
       <p className="text-xl text-gray-600 mb-6">
-        Your daily dashboard is ready to use. We're here to help you stay organized and connected with those who care about you.
+        Your Plan'd Beta Test dashboard is ready to use. We're here to help you stay organized and connected.
       </p>
       
       <p className="text-lg text-gray-700 mb-8">

@@ -59,8 +59,8 @@ export default function HomePage() {
   }, [isClientSide, currentHour]);
   
   // Name state - modified to use preferences if available
-  const names = ["MARY", "MOM", "MIMI"];
-  const [randomName, setRandomName] = useState("MARY"); // Default to prevent hydration error
+  const names = ["USER", "BETA", "TESTER"];
+  const [randomName, setRandomName] = useState("USER"); // Default to prevent hydration error
   
   // First useEffect to safely set client-side rendering flag and update date values
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function HomePage() {
     // Only run on client-side to prevent hydration mismatch
     if (!isClientSide) return;
     
-    const hasSeenOnboarding = localStorage.getItem('hasSeenMomAppOnboarding');
+    const hasSeenOnboarding = localStorage.getItem('hasSeenPlandAppOnboarding');
     const hasCompletedTour = localStorage.getItem('hasCompletedTooltipTour');
     
     if (!hasSeenOnboarding) {
@@ -187,7 +187,7 @@ export default function HomePage() {
     setShowOnboarding(false);
     // Check if running in browser environment before accessing localStorage
     if (typeof window !== 'undefined') {
-      localStorage.setItem('hasSeenMomAppOnboarding', 'true');
+      localStorage.setItem('hasSeenPlandAppOnboarding', 'true');
       
       // Start tooltip tour after modal is closed
       setTimeout(() => {
@@ -312,7 +312,7 @@ export default function HomePage() {
   // Function to reset onboarding (for testing)
   const resetOnboarding = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('hasSeenMomAppOnboarding');
+      localStorage.removeItem('hasSeenPlandAppOnboarding');
       localStorage.removeItem('hasCompletedTooltipTour');
       localStorage.removeItem('userPreferences');
       localStorage.removeItem('dailyRoutine');
@@ -409,7 +409,7 @@ export default function HomePage() {
         
         {/* Weather Card - using user's postal code or default */}
         <div id="weather-card">
-          <WeatherCard postalCode={userPreferences?.weatherLocation || "92054"} />
+          <WeatherCard postalCode={userPreferences?.weatherLocation || "M4B 1B3"} />
         </div>
         
         {/* Inspirational Quote */}

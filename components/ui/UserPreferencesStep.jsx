@@ -7,15 +7,15 @@ const UserPreferencesStep = ({ onSave, onSkip }) => {
   const [name, setName] = useState('');
   const [preferredName, setPreferredName] = useState('');
   const [timeZone, setTimeZone] = useState('America/Los_Angeles');
-  const [weatherLocation, setWeatherLocation] = useState('92054');
+  const [weatherLocation, setWeatherLocation] = useState('M4B 1B3');
   
   const handleSubmit = (e) => {
     e.preventDefault();
     
     // Create user preferences object
     const preferences = {
-      name: name.trim() || 'Mom',
-      preferredName: preferredName.trim() || (name.trim() || 'Mom'),
+      name: name.trim() || 'User',
+      preferredName: preferredName.trim() || (name.trim() || 'User'),
       timeZone,
       weatherLocation
     };
@@ -39,7 +39,7 @@ const UserPreferencesStep = ({ onSave, onSkip }) => {
             type="text"
             id="name"
             className="w-full border border-gray-300 rounded-md p-2 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-            placeholder="Mary"
+            placeholder="User"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -53,7 +53,7 @@ const UserPreferencesStep = ({ onSave, onSkip }) => {
             type="text"
             id="preferredName"
             className="w-full border border-gray-300 rounded-md p-2 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-            placeholder="Mom, Grandma, etc."
+            placeholder="User, Tester, etc."
             value={preferredName}
             onChange={(e) => setPreferredName(e.target.value)}
           />
@@ -70,7 +70,7 @@ const UserPreferencesStep = ({ onSave, onSkip }) => {
             type="text"
             id="weatherLocation"
             className="w-full border border-gray-300 rounded-md p-2 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-            placeholder="92054"
+            placeholder="M4B 1B3"
             value={weatherLocation}
             onChange={(e) => setWeatherLocation(e.target.value)}
           />

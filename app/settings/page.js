@@ -21,7 +21,7 @@ export default function SettingsPage() {
           const prefs = JSON.parse(storedPreferences);
           setName(prefs.name || '');
           setPreferredName(prefs.preferredName || '');
-          setWeatherLocation(prefs.weatherLocation || '92054');
+          setWeatherLocation(prefs.weatherLocation || 'M4B 1B3');
         } catch (err) {
           console.error('Error parsing stored preferences:', err);
         }
@@ -35,9 +35,9 @@ export default function SettingsPage() {
     if (typeof window !== 'undefined') {
       // Create preferences object
       const preferences = {
-        name: name.trim() || 'Mom',
-        preferredName: preferredName.trim() || (name.trim() || 'Mom'),
-        weatherLocation: weatherLocation || '92054'
+        name: name.trim() || 'User',
+        preferredName: preferredName.trim() || (name.trim() || 'User'),
+        weatherLocation: weatherLocation || 'M4B 1B3'
       };
       
       // Save to localStorage
@@ -51,7 +51,7 @@ export default function SettingsPage() {
   const handleResetOnboarding = () => {
     if (resetConfirm) {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('hasSeenMomAppOnboarding');
+        localStorage.removeItem('hasSeenPlandAppOnboarding');
         localStorage.removeItem('hasCompletedTooltipTour');
         
         // Redirect to home page to restart onboarding
@@ -82,7 +82,7 @@ export default function SettingsPage() {
             type="text"
             id="name"
             className="w-full border border-gray-300 rounded-md p-2 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-            placeholder="Mary"
+            placeholder="User"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -96,7 +96,7 @@ export default function SettingsPage() {
             type="text"
             id="preferredName"
             className="w-full border border-gray-300 rounded-md p-2 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-            placeholder="Mom, Grandma, etc."
+            placeholder="User, Tester, etc."
             value={preferredName}
             onChange={(e) => setPreferredName(e.target.value)}
           />
