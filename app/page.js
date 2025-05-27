@@ -17,6 +17,7 @@ import OnboardingModal from '../components/ui/OnboardingModal'; // Import the mo
 import TooltipTour from '../components/ui/TooltipTour'; // Import the tooltip tour
 import ClientOnly from '../components/ClientOnly'; // Import the ClientOnly component
 import NewTimelineBar from '../components/schedule/NewTimelineBar';
+import PriorityForm from '../components/priorities/PriorityForm';
 
 export default function HomePage() {
   const [noteText, setNoteText] = useState('');
@@ -169,10 +170,13 @@ export default function HomePage() {
   
   // Today's priorities (would come from API/database)
   const [priorities, setPriorities] = useState([
-    { id: 1, text: 'Gather a Box for Goodwill', completed: false },
-    { id: 2, text: 'Rayf Wrestling Meet', completed: false, time: 'Evening', hasDetails: true },
-    { id: 3, text: 'Eat the Brownies', completed: false, time: 'Night' }
+    { id: 1, text: 'Gather a Box for Goodwill', completed: false, priority: 'medium' },
+    { id: 2, text: 'Rayf Wrestling Meet', completed: false, time: 'Evening', hasDetails: true, priority: 'high' },
+    { id: 3, text: 'Eat the Brownies', completed: false, time: 'Night', priority: 'low' }
   ]);
+
+  // Priority editing state
+  const [editingPriority, setEditingPriority] = useState(null);
   
   
   // Quick access items with emoji icons
@@ -189,6 +193,35 @@ export default function HomePage() {
     setPriorities(priorities.map(priority => 
       priority.id === id ? { ...priority, completed: !priority.completed } : priority
     ));
+  };
+
+  const handleAddPriority = (priorityData) => {
+    setPriorities([...priorities, priorityData]);
+    setShowPriorityForm(false);
+  };
+
+  const handleEditPriority = (priority) => {
+    setEditingPriority(priority);
+    setShowPriorityForm(true);
+  };
+
+  const handleUpdatePriority = (updatedPriority) => {
+    setPriorities(priorities.map(priority => 
+      priority.id === updatedPriority.id ? updatedPriority : priority
+    ));
+    setEditingPriority(null);
+    setShowPriorityForm(false);
+  };
+
+  const handleDeletePriority = (id) => {
+    if (window.confirm('Are you sure you want to delete this priority?')) {
+      setPriorities(priorities.filter(priority => priority.id !== id));
+    }
+  };
+
+  const handleCancelPriorityForm = () => {
+    setEditingPriority(null);
+    setShowPriorityForm(false);
   };
   
   const handleToggleScheduleItem = (id) => {
@@ -471,29 +504,44 @@ export default function HomePage() {
         
         {showPrioritiesSection && (
           <>
-            {/* Hidden Add Priority Form */}
+            {/* Priority Add/Edit Form */}
             {showPriorityForm && (
-              <div className="mb-3 p-2 border border-black bg-gray-50">
-                <input 
-                  type="text" 
-                  className="w-full border border-gray-300 p-2 mb-2" 
-                  placeholder="New priority..."
-                />
-                <div className="flex justify-end">
-                  <button className="px-3 py-1 bg-black text-white">Add</button>
-                </div>
-              </div>
+              <PriorityForm
+                priority={editingPriority}
+                onSave={editingPriority ? handleUpdatePriority : handleAddPriority}
+                onCancel={handleCancelPriorityForm}
+              />
             )}
             
-            <ul>
-              {priorities.map(priority => (
-                <PriorityItem 
-                  key={priority.id}
-                  priority={priority}
-                  onToggle={handleTogglePriority}
-                />
-              ))}
-            </ul>
+            {/* Priorities List */}
+            {priorities.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <div className="text-4xl mb-2">📝</div>
+                <p>No priorities for today!</p>
+                <p className="text-sm">Click the + button to add your first priority.</p>
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {priorities
+                  .sort((a, b) => {
+                    // Sort by completion status, then by priority level
+                    if (a.completed !== b.completed) {
+                      return a.completed ? 1 : -1;
+                    }
+                    const priorityOrder = { high: 0, medium: 1, low: 2 };
+                    return (priorityOrder[a.priority] || 1) - (priorityOrder[b.priority] || 1);
+                  })
+                  .map(priority => (
+                    <PriorityItem 
+                      key={priority.id}
+                      priority={priority}
+                      onToggle={handleTogglePriority}
+                      onEdit={handleEditPriority}
+                      onDelete={handleDeletePriority}
+                    />
+                  ))}
+              </ul>
+            )}
           </>
         )}
       </div>
