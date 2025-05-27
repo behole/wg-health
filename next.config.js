@@ -11,10 +11,8 @@ const nextConfig = {
     domains: ['localhost'],
     unoptimized: true // Required for static export
   },
-  // Only use static export for production (Vercel build)
-  ...(process.env.NODE_ENV === 'production' && {
-    output: 'export',
-  }),
+  // Dynamic deployment for API routes (weather API)
+  // Removed static export to enable server-side API routes
   reactStrictMode: true,
   // Add custom headers for Vercel to help with routing
   async headers() {

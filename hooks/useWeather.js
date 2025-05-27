@@ -21,24 +21,19 @@ const useWeather = (postalCode = DEFAULT_POSTAL, location = null) => {
     const fetchWeather = async () => {
       try {
         setLoading(true);
-        console.log('Fetching weather for postal code:', postalCode, 'location:', location);
         
         let data;
         // Prefer postal code if provided
         if (postalCode) {
-          console.log('Using postal code:', postalCode);
           data = await getWeatherByZip(postalCode);
         } else if (location) {
           // Fall back to location name
-          console.log('Using location:', location);
           data = await getWeather(location);
         } else {
           // Default to the default postal code
-          console.log('Using default postal code:', DEFAULT_POSTAL);
           data = await getWeatherByZip(DEFAULT_POSTAL);
         }
         
-        console.log('Weather data received:', data);
         setWeather(data);
         setError(null);
       } catch (err) {
@@ -56,7 +51,6 @@ const useWeather = (postalCode = DEFAULT_POSTAL, location = null) => {
           humidity: 50,
           windSpeed: 5
         };
-        console.log('Setting fallback weather data:', fallbackData);
         setWeather(fallbackData);
       } finally {
         setLoading(false);
