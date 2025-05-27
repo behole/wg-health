@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, forwardRef } from 'react';
-import { ModalProps } from '@/types';
+import { ModalProps } from '../../types';
 
 const Modal = forwardRef<HTMLDivElement, ModalProps>(({
   children,

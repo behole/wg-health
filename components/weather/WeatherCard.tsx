@@ -1,7 +1,7 @@
 'use client';
 
 import React, { memo } from 'react';
-import { WeatherData } from '@/types';
+import { WeatherData } from '../../types';
 import { Card } from '@/components/ui';
 
 interface WeatherCardProps {

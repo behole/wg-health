@@ -1,7 +1,7 @@
 'use client';
 
 import React, { memo, useCallback } from 'react';
-import { PriorityItem as PriorityItemType } from '@/types';
+import { PriorityItem as PriorityItemType } from '../../types';
 import { Button } from '@/components/ui';
 
 interface PriorityItemProps {

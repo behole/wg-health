@@ -4,14 +4,17 @@ import {
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  User as FirebaseUser
+  User as FirebaseUser,
+  Auth
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { app, db } from './firebase';
-import { User, UserPreferences } from '@/types';
+import type { FirebaseApp } from 'firebase/app';
+import type { Firestore } from 'firebase/firestore';
+const { app, db }: { app: FirebaseApp | null; db: Firestore | null } = require('./firebase');
+import { User, UserPreferences } from '../types';
 
 // Initialize auth with error handling
-let auth = null;
+let auth: Auth | null = null;
 try {
   if (app) {
     auth = getAuth(app);

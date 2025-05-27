@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { User, AppState, AppError } from '@/types';
+import { User, AppState, AppError } from '../../types';
 import { onAuthStateChange } from '@/lib/auth';
 
 interface AppContextType {
