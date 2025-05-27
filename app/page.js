@@ -16,9 +16,12 @@ import useQuote from '../hooks/useQuote';
 import OnboardingModal from '../components/ui/OnboardingModal'; // Import the modal
 import TooltipTour from '../components/ui/TooltipTour'; // Import the tooltip tour
 import ClientOnly from '../components/ClientOnly'; // Import the ClientOnly component
+import NewTimelineBar from '../components/schedule/NewTimelineBar';
 
 export default function HomePage() {
   const [noteText, setNoteText] = useState('');
+  const [userWakeTime, setUserWakeTime] = useState('06:00');
+  const [userSleepTime, setUserSleepTime] = useState('22:00');
   const router = useRouter();
   
   const [showOnboarding, setShowOnboarding] = useState(false); // State for modal visibility
@@ -93,6 +96,32 @@ export default function HomePage() {
       setRandomName(names[Math.floor(Math.random() * names.length)]);
     }
   }, [isClientSide, names]);
+
+  // Load wake/sleep times from localStorage
+  useEffect(() => {
+    if (!isClientSide) return;
+    
+    try {
+      const savedWakeTime = localStorage.getItem('userWakeTime');
+      const savedSleepTime = localStorage.getItem('userSleepTime');
+      if (savedWakeTime) setUserWakeTime(savedWakeTime);
+      if (savedSleepTime) setUserSleepTime(savedSleepTime);
+    } catch (error) {
+      console.error('Failed to load wake/sleep preferences:', error);
+    }
+  }, [isClientSide]);
+  
+  // Save wake/sleep times to localStorage when they change
+  useEffect(() => {
+    if (!isClientSide) return;
+    
+    try {
+      localStorage.setItem('userWakeTime', userWakeTime);
+      localStorage.setItem('userSleepTime', userSleepTime);
+    } catch (error) {
+      console.error('Failed to save wake/sleep preferences:', error);
+    }
+  }, [userWakeTime, userSleepTime, isClientSide]);
 
   // Onboarding logic
   useEffect(() => {
@@ -497,17 +526,17 @@ export default function HomePage() {
               {/* Show different content depending on user's routine setup state */}
               {schedule.length > 0 ? (
                 <div className="routine-container">
-                  <div className="relative">
-                    {/* Routine items */}
-                    <div className="absolute left-2 top-0 bottom-0 w-1 bg-gray-200"></div>
-                    <div 
-                      className="absolute left-2 top-0 w-1 bg-yellow-400" 
-                      style={{ 
-                        height: `${schedule.length > 0 ? (schedule.filter(item => item.completed).length / schedule.length) * 100 : 0}%` 
-                      }}
-                    ></div>
-                    
-                    <ul className="pl-6">
+                  <div className="relative min-h-96 flex">
+                    {/* Timeline bar representing awake hours */}
+                    <div className="w-20 flex-shrink-0">
+                      <NewTimelineBar 
+                        schedule={schedule}
+                        wakeTime={userWakeTime}
+                        sleepTime={userSleepTime}
+                      />
+                    </div>
+                    <div className="flex-1 pl-4">
+                      <ul>
                       {/* Sort the schedule by time */}
                       {[...schedule].sort((a, b) => {
                         // Helper function to convert time to minutes for comparison
@@ -534,7 +563,8 @@ export default function HomePage() {
                           onDelete={handleDeleteRoutineItem}
                         />
                       ))}
-                    </ul>
+                      </ul>
+                    </div>
                   </div>
                   
                   {/* Reset routine button */}

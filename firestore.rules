@@ -1,40 +1,96 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // For personal microsite, allow read/write without authentication
-    // since this is a single-user application
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isFamilyMember() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'family'];
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // User profiles - users can only read/write their own profile
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      allow read: if isFamilyMember(); // Family members can read each other's profiles
+    }
+
+    // Appointments - family members can create, users can read their own
+    match /appointments/{appointmentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isOwner(resource.data.createdBy) || isFamilyMember();
+      allow delete: if isOwner(resource.data.createdBy) || isAdmin();
+    }
+
+    // Personal data collections - user-specific
+    match /users/{userId}/priorities/{priorityId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    match /users/{userId}/schedule/{scheduleId} {
+      allow read, write: if isOwner(userId);
+      allow read: if isFamilyMember(); // Family can view schedules
+    }
+    
+    match /users/{userId}/medicines/{medicineId} {
+      allow read, write: if isOwner(userId);
+      allow read: if isFamilyMember(); // Family can view medicines
+    }
+    
+    match /users/{userId}/foods/{foodId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Media collections - shared among family
+    match /media/{mediaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // System collections
+    match /system/{document} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Weather data - read-only for all authenticated users
+    match /weather/{document} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Updated by server-side functions only
+    }
+
+    // Notes and quotes - shared family data
+    match /notes/{noteId} {
+      allow read: if isAuthenticated();
+      allow write: if isFamilyMember();
+    }
+    
+    match /quotes/{quoteId} {
+      allow read: if isAuthenticated();
+      allow write: if isFamilyMember();
+    }
+
+    // Photos - family shared
+    match /photos/{photoId} {
+      allow read: if isAuthenticated();
+      allow write: if isFamilyMember();
+    }
+
+    // Default deny rule
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
-    
-    // Collection-specific rules
-    match /tvShows/{document} {
-      allow read, write: if true;
-    }
-    
-    match /books/{document} {
-      allow read, write: if true;
-    }
-    
-    match /medicines/{document} {
-      allow read, write: if true;
-    }
-    
-    match /foods/{document} {
-      allow read, write: if true;
-    }
-    
-    /* 
-    // More restrictive rules for future when authentication is added:
-    match /tvShows/{document} {
-      allow read: if true;  // Anyone can read
-      allow write: if request.auth != null;  // Only authenticated users can write
-    }
-    
-    match /books/{document} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    */
   }
 }

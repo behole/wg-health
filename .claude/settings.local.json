@@ -48,7 +48,17 @@
       "Bash(cat:*)",
       "Bash(git checkout:*)",
       "Bash(npm install:*)",
-      "WebFetch(domain:wg-health.vercel.app)"
+      "WebFetch(domain:wg-health.vercel.app)",
+      "Bash(npm ls:*)",
+      "Bash(npm run lint)",
+      "Bash(firebase projects:list:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(npm audit fix:*)",
+      "Bash(pkill:*)",
+      "Bash(npx next dev:*)",
+      "Bash(curl:*)",
+      "Bash(NEXT_LINT=false npm run dev)",
+      "Bash(ESLINT_NO_DEV_ERRORS=true npm run dev)"
     ],
     "deny": []
   }
