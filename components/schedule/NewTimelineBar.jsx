@@ -26,12 +26,12 @@ const NewTimelineBar = ({ schedule = [], wakeTime = "06:00", sleepTime = "22:00"
   const progressPercentage = Math.min(100, (progressHours / totalAwakeHours) * 100);
 
   return (
-    <div className="relative flex flex-col items-center" style={{width: '30px'}}>
-      {/* Main timeline container */}
-      <div className="relative" style={{width: '20px', height: '300px'}}>
+    <div className="relative flex flex-col items-center h-full" style={{width: '30px'}}>
+      {/* Main timeline container - fills full height */}
+      <div className="relative flex-1 w-5">
         {/* Background timeline with morning to night gradient */}
         <div 
-          className="absolute inset-x-0 top-0 bottom-0 w-full rounded-full shadow-inner"
+          className="absolute inset-0 w-full rounded-full shadow-inner"
           style={{
             background: `linear-gradient(to bottom, 
               #fef3c7 0%,    /* Morning - warm yellow */

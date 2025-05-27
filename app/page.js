@@ -528,16 +528,16 @@ export default function HomePage() {
               {/* Show different content depending on user's routine setup state */}
               {schedule.length > 0 ? (
                 <div className="routine-container">
-                  <div className="relative flex items-start gap-3">
+                  <div className="relative grid grid-cols-[auto_1fr] gap-3 min-h-0">
                     {/* Timeline bar representing your waking day */}
-                    <div className="flex-shrink-0">
+                    <div className="flex flex-col">
                       <NewTimelineBar 
                         schedule={schedule}
                         wakeTime={userWakeTime}
                         sleepTime={userSleepTime}
                       />
                     </div>
-                    <div className="flex-1">
+                    <div>
                       <ul>
                       {/* Sort the schedule by time */}
                       {[...schedule].sort((a, b) => {
