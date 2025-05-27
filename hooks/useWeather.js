@@ -21,36 +21,43 @@ const useWeather = (postalCode = DEFAULT_POSTAL, location = null) => {
     const fetchWeather = async () => {
       try {
         setLoading(true);
+        console.log('Fetching weather for postal code:', postalCode, 'location:', location);
         
         let data;
         // Prefer postal code if provided
         if (postalCode) {
+          console.log('Using postal code:', postalCode);
           data = await getWeatherByZip(postalCode);
         } else if (location) {
           // Fall back to location name
+          console.log('Using location:', location);
           data = await getWeather(location);
         } else {
           // Default to the default postal code
+          console.log('Using default postal code:', DEFAULT_POSTAL);
           data = await getWeatherByZip(DEFAULT_POSTAL);
         }
         
+        console.log('Weather data received:', data);
         setWeather(data);
         setError(null);
       } catch (err) {
         console.error('Error fetching weather:', err);
         setError(err.message);
         
-        // API should return fallback data, but just in case
-        if (!weather) {
-          setWeather({
-            temperature: 22,
-            condition: 'sunny',
-            highTemp: 26,
-            lowTemp: 18,
-            description: 'Unable to fetch weather. Using default sunny day data.',
-            location: location || `Postal Code: ${postalCode || DEFAULT_POSTAL}`
-          });
-        }
+        // Set fallback weather data
+        const fallbackData = {
+          temperature: 22,
+          condition: 'sunny',
+          highTemp: 26,
+          lowTemp: 18,
+          description: 'Unable to fetch weather. Using default sunny day data.',
+          location: location || `Postal Code: ${postalCode || DEFAULT_POSTAL}`,
+          humidity: 50,
+          windSpeed: 5
+        };
+        console.log('Setting fallback weather data:', fallbackData);
+        setWeather(fallbackData);
       } finally {
         setLoading(false);
       }

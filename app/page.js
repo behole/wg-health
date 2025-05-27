@@ -438,7 +438,9 @@ export default function HomePage() {
         
         {/* Weather Card - using user's postal code or default */}
         <div id="weather-card">
-          <WeatherCard postalCode={userPreferences?.weatherLocation || "M4B 1B3"} />
+          <ClientOnly>
+            <WeatherCard postalCode={userPreferences?.weatherLocation || "M4B 1B3"} />
+          </ClientOnly>
         </div>
         
         {/* Inspirational Quote */}

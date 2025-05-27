@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
-import weatherData from '../../../public/api/weather.json';
 
 // For static export, we'll use pre-defined weather data
 export async function GET() {
-  // Return the static weather data from our JSON file
-  return NextResponse.json({
-    temperature: 72,
+  // Since this is a static export, we can't use request.url
+  // Return static weather data for the default postal code M4B 1B3
+  const weatherData = {
+    temperature: 22,
     condition: 'sunny',
-    highTemp: 78,
-    lowTemp: 65,
+    highTemp: 26,
+    lowTemp: 18,
     description: 'Beautiful day today! Perfect weather to spend some time outdoors.',
     humidity: 45,
-    windSpeed: 5,
-    location: 'Oceanside',
-  });
+    windSpeed: 8,
+    location: 'Toronto, ON (M4B 1B3)'
+  };
+  
+  return NextResponse.json(weatherData);
 }
