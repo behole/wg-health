@@ -9,11 +9,14 @@ const ScheduleItem = ({ item, onToggle, onEdit, onDelete }) => {
   
   const getTimeBlockStyles = () => {
     if (time.includes('AM')) {
-      return 'bg-yellow-400 text-black';
+      // Morning hours - warm yellow like the timeline
+      return 'bg-yellow-300 text-black';
     } else if (time.includes('PM') && parseInt(time) < 5) {
-      return 'bg-red-400 text-black';
+      // Afternoon hours - blue like midday in timeline
+      return 'bg-blue-400 text-white';
     } else {
-      return 'bg-purple-500 text-white';
+      // Evening hours - purple like the timeline evening
+      return 'bg-purple-400 text-white';
     }
   };
   
@@ -31,7 +34,7 @@ const ScheduleItem = ({ item, onToggle, onEdit, onDelete }) => {
         onClick={() => onToggle(id)}
         className={`absolute left-0 w-4 h-4 rounded-full -ml-[7px] top-[calc(50%-8px)]
                     ${completed ? 'bg-black' : 'border-2 border-black bg-white'}
-                    ${isRoutine ? 'border-purple-600' : ''}`}
+                    ${isRoutine ? 'border-blue-600' : ''}`}
         aria-label={completed ? "Mark as incomplete" : "Mark as complete"}
       />
       
@@ -45,7 +48,7 @@ const ScheduleItem = ({ item, onToggle, onEdit, onDelete }) => {
       <span className={`priority-text flex-grow ${completed ? 'line-through' : ''}`}>
         {activity}
         {isRoutine && (
-          <span className="ml-2 text-xs text-purple-600 font-medium">routine</span>
+          <span className="ml-2 text-xs text-blue-600 font-medium">routine</span>
         )}
       </span>
       
@@ -53,7 +56,7 @@ const ScheduleItem = ({ item, onToggle, onEdit, onDelete }) => {
         {hasDetails && (
           <button 
             onClick={handleViewDetails}
-            className="ml-2 text-purple-600"
+            className="ml-2 text-blue-600"
             aria-label="View details"
           >
             <span className="text-xl">+</span>
