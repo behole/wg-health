@@ -16,7 +16,6 @@ import useQuote from '../hooks/useQuote';
 import OnboardingModal from '../components/ui/OnboardingModal'; // Import the modal
 import TooltipTour from '../components/ui/TooltipTour'; // Import the tooltip tour
 import ClientOnly from '../components/ClientOnly'; // Import the ClientOnly component
-import NewTimelineBar from '../components/schedule/NewTimelineBar';
 import PriorityForm from '../components/priorities/PriorityForm';
 
 export default function HomePage() {
@@ -454,17 +453,17 @@ export default function HomePage() {
       <div className="h-6"></div> {/* Spacer for fixed banner */}
       
       {/* Header */}
-      <div className="p-4">
-        <div className="flex justify-between items-start">
+      <div className="px-4 py-6">
+        <div className="flex justify-between items-start mb-4">
           <div>
-            <ClientOnly fallback={<p className="text-sm">Hello!</p>}>
-              <p className="text-sm">{greeting}</p>
+            <ClientOnly fallback={<p className="text-xs font-semibold mb-1">Good Morning!</p>}>
+              <p className="text-xs font-semibold mb-1">{greeting}</p>
             </ClientOnly>
-            <h1 className="text-5xl font-bold leading-none">{randomName}</h1>
+            <h1 className="text-3xl font-bold leading-tight">{randomName}</h1>
           </div>
           <div className="text-right">
-            <ClientOnly fallback={<p className="text-sm">Today's Date</p>}>
-              <p className="text-sm">{dayName} {dateStr}</p>
+            <ClientOnly fallback={<p className="text-xs font-semibold">Tuesday 5.27.25</p>}>
+              <p className="text-xs font-semibold">{dayName} {dateStr}</p>
             </ClientOnly>
           </div>
         </div>
@@ -484,22 +483,15 @@ export default function HomePage() {
       </div>
       
       {/* Today's Priorities */}
-      <div className="px-4 mb-4" id="priorities-section">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="font-bold">Today's Priorities 
+      <div className="px-4 mb-6" id="priorities-section">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">Today's Priorities 
             <button 
               onClick={togglePriorityForm} 
-              className="text-blue-600 ml-1"
+              className="text-black ml-2 text-sm"
               aria-label="Add priority"
             >+</button>
           </h2>
-          <button 
-            onClick={togglePrioritiesSection}
-            className="text-xl"
-            aria-label={showPrioritiesSection ? "Hide priorities" : "Show priorities"}
-          >
-            {showPrioritiesSection ? "👀" : "😎"}
-          </button>
         </div>
         
         {showPrioritiesSection && (
@@ -547,23 +539,16 @@ export default function HomePage() {
       </div>
       
       {/* Daily Schedule */}
-      <div className="px-4 mb-4" id="routine-section">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="font-bold">
+      <div className="px-4 mb-6" id="routine-section">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">
             Daily Routine
             <button 
               onClick={addNewRoutineItem} 
-              className="text-blue-600 ml-1"
+              className="text-black ml-2 text-sm"
               aria-label="Add routine item"
             >+</button>
           </h2>
-          <button 
-            onClick={toggleRoutineSection}
-            className="text-xl"
-            aria-label={showRoutineSection ? "Hide routine" : "Show routine"}
-          >
-            {showRoutineSection ? "👀" : "😎"}
-          </button>
         </div>
         
         {showRoutineSection && (
@@ -576,17 +561,8 @@ export default function HomePage() {
               {/* Show different content depending on user's routine setup state */}
               {schedule.length > 0 ? (
                 <div className="routine-container">
-                  <div className="relative grid grid-cols-[auto_1fr] gap-3 min-h-0">
-                    {/* Timeline bar representing your waking day */}
-                    <div className="flex flex-col">
-                      <NewTimelineBar 
-                        schedule={schedule}
-                        wakeTime={userWakeTime}
-                        sleepTime={userSleepTime}
-                      />
-                    </div>
-                    <div>
-                      <ul>
+                  <div>
+                    <ul>
                       {/* Sort the schedule by time */}
                       {[...schedule].sort((a, b) => {
                         // Helper function to convert time to minutes for comparison
@@ -604,17 +580,17 @@ export default function HomePage() {
                         };
                         
                         return timeToMinutes(a.time) - timeToMinutes(b.time);
-                      }).map(item => (
+                      }).map((item, index) => (
                         <ScheduleItem 
                           key={item.id}
                           item={item}
+                          index={index}
                           onToggle={handleToggleScheduleItem}
                           onEdit={handleEditRoutineItem}
                           onDelete={handleDeleteRoutineItem}
                         />
                       ))}
-                      </ul>
-                    </div>
+                    </ul>
                   </div>
                   
                   {/* Reset routine button */}
@@ -655,25 +631,27 @@ export default function HomePage() {
       </div>
       
       {/* Add Appointment Button */}
-      <button 
-        onClick={handleAddAppointment}
-        className="bg-black text-white py-3 px-4 flex justify-between items-center w-full mb-4"
-      >
-        <span className="font-bold">ADD AN APPOINTMENT</span>
-        <span className="text-xl">+</span>
-      </button>
+      <div className="px-4 mb-6">
+        <button 
+          onClick={handleAddAppointment}
+          className="bg-black text-white py-4 px-6 rounded-full flex justify-between items-center w-full font-medium text-sm"
+        >
+          <span>ADD AN APPOINTMENT</span>
+          <span className="text-sm">+</span>
+        </button>
+      </div>
       
       {/* Quick Access Grid */}
-      <div id="quick-access" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 px-4 mb-4">
+      <div id="quick-access" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 px-4 mb-6">
         {quickAccessItems.map(item => (
           <button 
             key={item.id} 
-            className="border border-gray-300 p-4 flex flex-col justify-center items-center h-24 hover:bg-gray-50 transition-colors"
+            className="border border-black rounded-lg p-4 flex flex-col justify-center items-center h-24 hover:bg-gray-50 transition-colors bg-white"
             onClick={() => handleQuickAccess(item)}
             aria-label={`Open ${item.name}`}
           >
-            <span className="text-4xl mb-2">{item.emoji}</span>
-            <span className="text-sm">{item.name}</span>
+            <span className="text-3xl mb-1">{item.emoji}</span>
+            <span className="text-xs font-medium">{item.name}</span>
           </button>
         ))}
       </div>
@@ -703,19 +681,19 @@ export default function HomePage() {
       <div id="call-section" className="px-4 mb-8">
         <a 
           href="tel:+15551234567"
-          className="block w-full bg-white border-2 border-black rounded-full py-3 mb-2 font-bold text-center flex items-center justify-center"
+          className="block w-full bg-white border border-black rounded-full py-4 mb-3 font-medium text-center flex items-center justify-center text-sm"
         >
           <span className="mr-2">📞</span> Call Mike
         </a>
         <a 
           href="tel:+15552345678"
-          className="block w-full bg-white border-2 border-black rounded-full py-3 mb-2 font-bold text-center flex items-center justify-center"
+          className="block w-full bg-white border border-black rounded-full py-4 mb-3 font-medium text-center flex items-center justify-center text-sm"
         >
           <span className="mr-2">📞</span> Call Sarah
         </a>
         <a 
           href="tel:+15553456789"
-          className="block w-full bg-white border-2 border-black rounded-full py-3 font-bold text-center flex items-center justify-center"
+          className="block w-full bg-white border border-black rounded-full py-4 font-medium text-center flex items-center justify-center text-sm"
         >
           <span className="mr-2">📞</span> Call Josh
         </a>

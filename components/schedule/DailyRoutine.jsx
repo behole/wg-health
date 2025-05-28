@@ -162,24 +162,12 @@ const DailyRoutine = ({
             Change Template
           </button>
           
-          {/* Vertical timeline line with progress */}
-          <div className="absolute left-2 top-0 bottom-0 w-1 bg-gray-200"></div>
-          
-          {/* Progress bar overlay */}
-          {routineItems.length > 0 && (
-            <div 
-              className="absolute left-2 top-0 w-1 bg-yellow-400" 
-              style={{ 
-                height: `${(routineItems.filter(item => item.completed).length / routineItems.length) * 100}%` 
-              }}
-            ></div>
-          )}
-          
-          <ul className="pl-6">
-            {routineItems.map(item => (
+          <ul>
+            {routineItems.map((item, index) => (
               <ScheduleItem 
                 key={item.id}
                 item={item}
+                index={index}
                 onToggle={onToggle}
               />
             ))}
