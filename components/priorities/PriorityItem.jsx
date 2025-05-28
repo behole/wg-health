@@ -7,21 +7,6 @@ const PriorityItem = ({ priority, onToggle, onEdit, onDelete }) => {
   const router = useRouter();
   const { id, text, completed, time, hasDetails, priority: priorityLevel } = priority;
   
-  const getTimeStyles = () => {
-    switch(time) {
-      case 'Morning':
-        return 'bg-yellow-300 text-black';
-      case 'Afternoon':
-        return 'bg-blue-400 text-white';
-      case 'Evening':
-        return 'bg-purple-400 text-white';
-      case 'Night':
-        return 'bg-gray-800 text-white';
-      default:
-        return 'bg-gray-500 text-white';
-    }
-  };
-
   const getPriorityColor = () => {
     switch(priorityLevel) {
       case 'high':

@@ -59,7 +59,8 @@
       "Bash(curl:*)",
       "Bash(NEXT_LINT=false npm run dev)",
       "Bash(ESLINT_NO_DEV_ERRORS=true npm run dev)",
-      "Bash(NODE_ENV=production node -e \"console.log('NODE_ENV:', process.env.NODE_ENV)\")"
+      "Bash(NODE_ENV=production node -e \"console.log('NODE_ENV:', process.env.NODE_ENV)\")",
+      "Bash(git cherry-pick:*)"
     ],
     "deny": []
   }
