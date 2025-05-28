@@ -58,7 +58,8 @@
       "Bash(npx next dev:*)",
       "Bash(curl:*)",
       "Bash(NEXT_LINT=false npm run dev)",
-      "Bash(ESLINT_NO_DEV_ERRORS=true npm run dev)"
+      "Bash(ESLINT_NO_DEV_ERRORS=true npm run dev)",
+      "Bash(git cherry-pick:*)"
     ],
     "deny": []
   }

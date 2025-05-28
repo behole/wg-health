@@ -7,15 +7,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        yellow: {
-          400: '#FFD100',
+        priority: {
+          low: '#009917',
+          medium: '#FFD400', 
+          high: '#FF0004',
         },
-        purple: {
-          600: '#9B30FF',
+        routine: {
+          blue: '#0900FF',
+          purple: '#7A00DE',
+          red: '#FF0004',
+          yellow: '#FFD400',
         },
-        red: {
-          400: '#FF6B6B',
+        gray: {
+          300: '#D9D9D9',
         },
+        orange: '#FFA100',
       },
       fontFamily: {
         mono: ['IBM Plex Mono', 'monospace'],
