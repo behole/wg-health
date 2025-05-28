@@ -188,9 +188,6 @@ export default function HomePage() {
     { id: 6, name: 'Map', emoji: '🗺️' }
   ];
   
-  // Priority editing state
-  const [editingPriority, setEditingPriority] = useState(null);
-
   const handleTogglePriority = (id) => {
     setPriorities(priorities.map(priority => 
       priority.id === id ? { ...priority, completed: !priority.completed } : priority
